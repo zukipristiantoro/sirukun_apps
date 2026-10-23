@@ -1,44 +1,47 @@
-SIRUKUN 1.0 - PAKET LARAVEL SIAP DIPASANG DI XAMPP
-=================================================
+SIRUKUN 1.0 - PANDUAN SETUP DATABASE DAN AKUN
+==============================================
 
 1. PERSYARATAN
-- XAMPP dengan PHP 8.2 atau lebih baru, Apache, dan MySQL/MariaDB.
+- PHP 8.2 atau lebih baru dan MySQL/MariaDB. XAMPP dapat digunakan, tetapi
+  folder proyek tidak wajib berada di htdocs.
 - Ekstensi PHP: pdo_mysql, mbstring, openssl, fileinfo, ctype, tokenizer,
   dom, xml, xmlwriter, gd, dan zip.
-- Apache mod_rewrite aktif dan AllowOverride All untuk folder htdocs.
-- Paket sudah menyertakan vendor. Composer, Node.js, npm, serta koneksi
-  internet tidak diperlukan untuk instalasi dan pemakaian lokal.
+- Composer untuk memasang vendor bila folder vendor belum tersedia.
+- Node.js/npm tidak diperlukan.
 - Jangan menghapus folder vendor, storage, bootstrap/cache, atau file .htaccess.
 
-2. INSTALASI CEPAT
-1) Jalankan XAMPP Control Panel. Start Apache dan MySQL.
-2) Ekstrak ZIP sehingga folder aplikasi menjadi:
-   C:\xampp\htdocs\sirukun\
-   Pastikan di dalamnya langsung terdapat app, public, vendor, dan artisan;
-   bukan C:\xampp\htdocs\sirukun\sirukun\.
-3) Buka browser pada komputer XAMPP:
-   http://localhost/sirukun/public/install.php
-   Jika Apache memakai port 8080, gunakan:
-   http://localhost:8080/sirukun/public/install.php
-4) Lengkapi koneksi database. Pengaturan XAMPP yang umum:
-   Host: 127.0.0.1
-   Port: 3306
-   Nama database: sirukun (database baru/kosong)
-   Pengguna: root
-   Kata sandi database: kosong, jika MySQL Anda belum diberi kata sandi.
-   Sesuaikan dengan konfigurasi XAMPP Anda.
-5) Masukkan kode/nama RW, kelurahan, dan nomor RT awal.
-6) Buat nama, email, dan kata sandi Administrator (minimal 12 karakter).
-7) Periksa URL aplikasi. Gunakan http://localhost/sirukun/public untuk
-   pemakaian di komputer yang sama. Tombol instalasi membuat database,
-   menjalankan migrasi, mengisi data dasar, dan mengunci installer.
-8) Setelah berhasil, buka:
-   http://localhost/sirukun/public/
-   Masuk dengan email/kata sandi yang Anda buat sendiri.
+2. PERSIAPAN DATABASE DAN AKUN AWAL
+1) Jalankan MySQL/MariaDB. Buat database kosong bernama sirukun_apps
+   melalui phpMyAdmin atau MySQL. Siapkan pengguna database dengan hak
+   membuat tabel dan indeks pada database tersebut.
+2) Dari terminal, masuk ke folder proyek. Pasang dependensi jika vendor
+   belum tersedia:
+   composer install
+3) Salin .env.example menjadi .env. Atur DB_HOST, DB_PORT,
+   DB_DATABASE=sirukun_apps, DB_USERNAME, DB_PASSWORD, dan APP_URL.
+4) Jalankan perintah berikut menggunakan PHP yang sama dengan server:
+   php artisan optimize:clear
+   php artisan key:generate
+   php artisan migrate --seed
+5) Mulai server lokal dari folder proyek:
+   php artisan serve
+   Untuk XAMPP, dapat gunakan:
+   C:\xampp\php\php.exe artisan serve
+6) Buka pada komputer yang sama:
+   http://127.0.0.1:8000/install.php
+7) Isi identitas RW awal (kode, nama lingkungan, kelurahan, nomor RT),
+   lalu buat akun Administrator. Pendaftaran dibatasi ke komputer server
+   dan otomatis dikunci setelah berhasil. Kata sandi Administrator minimal
+   6 karakter. Semua kata sandi menggunakan batas minimal ini. Huruf, angka,
+   simbol, dan spasi diperbolehkan; huruf besar
+   dan kecil dibedakan.
+8) Masuk melalui http://127.0.0.1:8000/. Tambahkan RW/RT lain bila
+   diperlukan, lalu lengkapi hunian dan data warga.
 
-Tidak ada akun Administrator dengan kata sandi bawaan.
-Tidak perlu mengimpor SQL secara manual. Database harus kosong; installer
-tidak menimpa database yang sudah berisi tabel.
+Tidak ada akun Administrator atau kata sandi bawaan. File install.php tidak
+membuat database dan tidak menjalankan migrasi; kedua tahap tersebut dilakukan
+secara eksplisit melalui MySQL dan perintah Artisan di atas. Jangan gunakan
+database berisi data aplikasi lain.
 
 3. PENGATURAN AWAL SETELAH MASUK
 Urutan yang disarankan:
@@ -150,8 +153,9 @@ C:\xampp\php\php.exe artisan sirukun:backup
   file sumber/config/storage tidak boleh diakses lewat web. Gunakan /public/.
 - Database gagal terhubung: periksa MySQL sudah Start, port, pengguna,
   dan kata sandi. Port MySQL bukan port Apache.
-- Instalasi terhenti dan tabel sudah terbuat sebagian: pilih nama database
-  baru. Jangan menghapus database lama tanpa memeriksa isinya.
+- Migrasi gagal: periksa kredensial database dan storage\logs\laravel.log.
+  Periksa status dengan php artisan migrate:status; jangan menghapus atau
+  mengganti database sebelum memastikan tidak ada data yang perlu disimpan.
 - Installer terkunci setelah berhasil: perilaku normal. Jangan menghapus
   storage\app\installed.lock pada instalasi yang sudah berisi data.
 - Unggahan ditolak: hanya JPG/PNG/PDF maksimal 2 MB per berkas. Pastikan

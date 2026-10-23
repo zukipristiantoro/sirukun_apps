@@ -11,27 +11,40 @@ Aplikasi web administrasi lingkungan berbasis **Laravel 12, PHP 8.2+, dan MySQL/
 - Dashboard, laporan PDF/Excel, pengelolaan pengguna/menu, log aktivitas, dan backup SQL.
 - Pembatasan akses sesuai peran/wilayah dan penyimpanan dokumen privat.
 
-## Instalasi dari GitHub di XAMPP
+## Instalasi dan pendaftaran Administrator
 
-Repositori ini berisi source code dan `composer.lock`. Folder `vendor` tidak disertakan; jalankan Composer sekali untuk mengunduh dependensi. Paket ZIP/RAR XAMPP yang telah dibuat sebelumnya menyertakan dependensi dan dapat dipasang tanpa Composer. Node.js/npm tidak diperlukan.
+Repositori berisi source code dan `composer.lock`, tetapi tidak menyertakan `vendor` atau kredensial. Node.js/npm tidak diperlukan.
 
-1. Gunakan XAMPP dengan PHP **8.2 atau lebih baru**. Aktifkan Apache dan MySQL.
-2. Aktifkan ekstensi PHP `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `ctype`, `tokenizer`, `dom`, `xml`, `xmlwriter`, `gd`, dan `zip`. Apache memerlukan `mod_rewrite` dan `AllowOverride All`.
-3. Clone repositori ke `C:\xampp\htdocs\sirukun`, atau unduh source lalu ubah nama folder hasil ekstraksi menjadi `sirukun`.
-4. Dari terminal, jalankan:
+1. Gunakan PHP **8.2 atau lebih baru** dan MySQL/MariaDB. Aktifkan ekstensi PHP `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `ctype`, `tokenizer`, `dom`, `xml`, `xmlwriter`, `gd`, dan `zip`.
+2. Pasang dependensi dari folder proyek:
 
    ```bat
-   cd C:\xampp\htdocs\sirukun
-   composer install --no-dev --prefer-dist --optimize-autoloader
+   composer install
    ```
 
-   Pastikan Composer memakai PHP XAMPP yang sama dengan Apache.
-5. Buka **http://localhost/sirukun/public/install.php** melalui browser pada komputer XAMPP.
-6. Isi koneksi database **baru/kosong**, identitas RW/RT, serta nama, email, dan kata sandi Administrator minimal 12 karakter.
-7. Installer membuat konfigurasi `.env`, tabel database, data awal, dan akun Administrator, lalu mengunci dirinya. Jangan menjalankan migrasi atau membuat `.env` sebelum memakai installer ini.
-8. Buka **http://localhost/sirukun/public/** dan masuk dengan akun yang baru dibuat. Lengkapi wilayah, hunian, KK, warga, dan akun pengurus melalui aplikasi.
+   Composer harus menggunakan PHP yang sama dengan runtime aplikasi.
+3. Buat database kosong bernama `sirukun_apps` melalui phpMyAdmin atau MySQL. Buat/siapkan akun MySQL yang dapat membuat tabel dan indeks di database tersebut.
+4. Salin `.env.example` menjadi `.env`, lalu atur `DB_HOST`, `DB_PORT`, `DB_DATABASE=sirukun_apps`, `DB_USERNAME`, dan `DB_PASSWORD`. Atur juga `APP_URL` sesuai alamat aplikasi.
+5. Dari terminal pada folder proyek, siapkan kunci dan tabel/data dasar:
 
-Tidak tersedia akun Administrator dengan kata sandi bawaan. Untuk port Apache selain 80, sesuaikan URL. Direktori `storage`, `bootstrap/cache`, serta root proyek harus dapat ditulis saat instalasi.
+   ```bat
+   php artisan optimize:clear
+   php artisan key:generate
+   php artisan migrate --seed
+   ```
+
+6. Jalankan aplikasi dari folder mana pun, tanpa perlu meletakkannya di `htdocs`:
+
+   ```bat
+   php artisan serve
+   ```
+
+7. Buka **http://127.0.0.1:8000/install.php** dari komputer yang menjalankan server. Formulir membuat akun Administrator serta identitas RW/RT awal; halaman hanya dapat diakses lokal dan terkunci setelah pendaftaran. Semua kata sandi minimal 6 karakter; huruf, angka, simbol, dan spasi diperbolehkan, serta huruf besar/kecil dibedakan.
+8. Masuk ke **http://127.0.0.1:8000/**. Tambahkan RW/RT lain bila diperlukan, kemudian lengkapi hunian dan data warga.
+
+Tidak tersedia akun Administrator dengan kata sandi bawaan. Ekstensi GD tidak lagi menghalangi pendaftaran awal, tetapi tetap diperlukan oleh Composer dan fitur tertentu seperti ekspor spreadsheet/gambar. Jika memakai XAMPP, jalankan perintah `php artisan` menggunakan PHP XAMPP, misalnya `C:\xampp\php\php.exe artisan migrate --seed`.
+
+Direktori `storage`, `storage/app`, `storage/framework/sessions`, `bootstrap/cache`, dan root proyek harus dapat ditulis. Server bawaan Laravel ditujukan untuk pengembangan/pemakaian lokal; untuk deployment, gunakan web server dengan document root diarahkan ke folder `public`.
 
 ## Pengembangan dan pengujian
 

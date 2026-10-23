@@ -15,5 +15,5 @@ class AuthController {
  }
  public function logout(Request $r){Audit::record('logout','pengguna',auth()->id());Auth::logout();$r->session()->invalidate();$r->session()->regenerateToken();return redirect()->route('login');}
  public function profile(){return view('profile');}
- public function password(Request $r){$v=$r->validate(['current_password'=>'required|current_password','password'=>'required|string|min:12|max:100|confirmed']);$u=$r->user();$u->password_hash=Hash::make($v['password']);$u->save();$r->session()->regenerate();Audit::record('ubah_kata_sandi','pengguna',$u->id);return back()->with('success','Kata sandi berhasil diperbarui.');}
+ public function password(Request $r){$v=$r->validate(['current_password'=>'required|current_password','password'=>'required|string|min:6|max:100|confirmed']);$u=$r->user();$u->password_hash=Hash::make($v['password']);$u->save();$r->session()->regenerate();Audit::record('ubah_kata_sandi','pengguna',$u->id);return back()->with('success','Kata sandi berhasil diperbarui.');}
 }
